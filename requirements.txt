@@ -1,0 +1,8 @@
+flask
+uuid
+speechrecognition
+pydub
+werkzeug
+
+utils
+flask_restful
