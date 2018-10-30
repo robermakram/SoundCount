@@ -8,6 +8,8 @@ import logging
 import utils
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
+#import environment as env
+import analyzer
 
 
 # Instance of application
@@ -34,8 +36,10 @@ class SoundCount(Resource):
 
         # Save the data as a temporary file
         filename = str(uuid.uuid4())
+
         try:
             audio_file = args['file']
+            audio_file.save(filename)
         except AttributeError:
                 if audio_file is None:
                     logging.error("Audio data not received")
@@ -43,19 +47,24 @@ class SoundCount(Resource):
         #opens the file and it recognize the text and saves it to payload
         try:
             r = sr.Recognizer()
-            with sr.AudioFile(audio_file) as source:
+            with sr.AudioFile(filename) as source:
                     audio = r.record(source)  # read the entire audio file
                     payload['meta']['text'] = r.recognize_google(audio)
         except:
             return payload
-        #it counts the words
-        for word in payload['meta']['text']:
-            if word == ' ':
-                payload['count'] += len(word)
-        payload['count'] += len(word)
 
+        """the main problem happens here
+        it calculate everthing right from the .wav file but it cant
+        get the data that it needs to know if it is a male
+        or a female speaking"""
+        ana= analyzer.voice_analyzer(filename)
+        print(ana)
+
+        #it counts the words
         if 'error' not in payload:
             payload['status'] = 'success'
+            payload['count'] += len(payload['meta']['text'].split())
+        os.remove(filename)
         return payload
 
 
