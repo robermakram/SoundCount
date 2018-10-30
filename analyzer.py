@@ -1,0 +1,22 @@
+import numpy as np
+import librosa
+import environment as env
+def voice_analyzer(filename):
+    y,sr= librosa.load(filename, sr=22050)
+
+    stft = np.abs(librosa.stft(y))
+    mfccs = np.mean(librosa.feature.mfcc(y=y, sr=sr, n_mfcc=40).T, axis=0)
+    mel = np.mean(librosa.feature.melspectrogram(y, sr=sr).T, axis=0)
+    contrast = np.mean(librosa.feature.spectral_contrast(S=stft, sr=sr).T, axis=0)
+    tonnetz = np.mean(librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr).T, axis=0)
+    chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sr).T,axis=0)
+    features = np.hstack([mfccs,chroma,mel,contrast,tonnetz])
+    features = features.reshape(1, -1)
+    info = dict()
+    """
+    the problem happens here!!
+    this is calling the environment.py
+    
+    info['gender'] = env.clffg.predict(features)[0]
+    """
+    return info
