@@ -13,10 +13,12 @@ def voice_analyzer(filename):
     features = np.hstack([mfccs,chroma,mel,contrast,tonnetz])
     features = features.reshape(1, -1)
     info = dict()
-    """
-    the problem happens here!!
-    this is calling the environment.py
-    
-    info['gender'] = env.clffg.predict(features)[0]
-    """
+
+    myValue = utils.calc(mel, 3, 4)
+
+    if (myValue < 1.0):
+        info['gender'] = "Female Speaker"
+    else:
+        info['gender'] = "Male Speaker"
+
     return info
