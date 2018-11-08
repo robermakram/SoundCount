@@ -58,12 +58,12 @@ class SoundCount(Resource):
         get the data that it needs to know if it is a male
         or a female speaking"""
         ana= analyzer.voice_analyzer(filename)
-        print(ana)
 
         #it counts the words
         if 'error' not in payload:
             payload['status'] = 'success'
             payload['count'] += len(payload['meta']['text'].split())
+            payload['meta']['gender'] = ana['gender']
         os.remove(filename)
         return payload
 
